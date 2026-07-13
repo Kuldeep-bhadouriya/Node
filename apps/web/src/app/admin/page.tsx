@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import QRCode from "react-qr-code";
-import { trpc } from "@/utils/trpc";
+import { trpcClient as trpc } from "@/utils/trpc";
 import { toast } from "sonner";
 import { Printer } from "lucide-react";
 
