@@ -1,46 +1,36 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import QRCode from "react-qr-code";
-import { trpcClient as trpc } from "@/utils/trpc";
+import { trpc } from "@/utils/trpc";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Printer } from "lucide-react";
 
 export default function AdminDashboard() {
-  const [students, setStudents] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ name: "", rollNo: "", course: "", semester: "" });
 
-  const fetchStudents = async () => {
-    try {
-      const data = await trpc.student.getAll.query();
-      setStudents(data);
-    } catch (err) {
-      toast.error("Failed to load students");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: students = [], isLoading: loading, refetch } = useQuery(trpc.student.getAll.queryOptions());
 
-  useEffect(() => {
-    fetchStudents();
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await trpc.student.create.mutate({
-        name: form.name,
-        rollNo: form.rollNo,
-        course: form.course,
-        semester: parseInt(form.semester),
-      });
+  const addStudent = useMutation(trpc.student.create.mutationOptions({
+    onSuccess: () => {
       toast.success("Student added successfully!");
       setForm({ name: "", rollNo: "", course: "", semester: "" });
-      fetchStudents(); // Refresh the grid
-    } catch (error: any) {
+      refetch();
+    },
+    onError: (error: any) => {
       toast.error(error.message || "Failed to add student");
     }
+  }));
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    addStudent.mutate({
+      name: form.name,
+      rollNo: form.rollNo,
+      course: form.course,
+      semester: parseInt(form.semester),
+    });
   };
 
   const handlePrint = () => {
