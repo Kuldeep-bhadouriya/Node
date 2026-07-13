@@ -1,0 +1,12 @@
+model Student {
+  id        String   @id @default(uuid())
+  name      String
+  rollNo    String   @unique
+  course    String
+  semester  Int
+  photoUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([id])
+}

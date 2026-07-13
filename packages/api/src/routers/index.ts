@@ -1,6 +1,8 @@
 import { protectedProcedure, publicProcedure, router } from "../index";
+import { studentRouter } from "./student";
 
 export const appRouter = router({
+  student: studentRouter,
   healthCheck: publicProcedure.query(() => {
     return "OK";
   }),

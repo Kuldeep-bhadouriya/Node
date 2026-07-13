@@ -15,7 +15,8 @@
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:seed": "bun --env-file=../../apps/web/.env prisma/seed.ts"
   },
   "dependencies": {
     "@node/env": "workspace:*",
