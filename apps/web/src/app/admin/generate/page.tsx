@@ -1,22 +1,28 @@
-import { appRouter } from "@node/api/routers/index";
-import prisma from "@node/db";
 import QRCode from "react-qr-code";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { auth } from "@node/auth";
+import prisma from "@node/db";
 import { generateQRToken } from "@/lib/qr-token";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminGeneratePage() {
-  const caller = appRouter.createCaller({
-    session: null,
-    prisma: prisma,
+  const session = await auth.api.getSession({
+    headers: await headers(),
   });
 
-  const students = await caller.student.getAll();
+  // Middleware handles the redirect, but this is a safety check
+  if (!session || session.user.role !== "ADMIN") {
+    redirect("/login?redirect=/admin/generate");
+  }
+
+  const students = await prisma.student.findMany({
+    orderBy: { createdAt: "desc" },
+  });
   
-  // We determine the base URL using headers if possible, or fallback
   const headersList = await headers();
-  const host = headersList.get("host") || "localhost:3000";
+  const host = headersList.get("host") || "localhost:3001";
   const protocol = host.includes("localhost") ? "http" : "https";
   const baseUrl = `${protocol}://${host}`;
 
@@ -24,7 +30,7 @@ export default async function AdminGeneratePage() {
     <div className="min-h-screen bg-slate-50 p-8">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8 border-b pb-4">
-          <h1 className="text-3xl font-bold text-slate-900">Admin Dashboard</h1>
+          <h1 className="text-3xl font-bold text-slate-900">Generate QR Codes</h1>
           <p className="text-slate-500 mt-2">Generate and print QR Codes for Student IDs.</p>
         </div>
 
