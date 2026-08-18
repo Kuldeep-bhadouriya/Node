@@ -6,6 +6,7 @@ import { trpc } from "@/utils/trpc";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Printer } from "lucide-react";
+import { generateQRToken } from "@/lib/qr-token";
 
 export default function AdminDashboard() {
   const [form, setForm] = useState({ name: "", rollNo: "", course: "", semester: "" });
@@ -61,19 +62,19 @@ export default function AdminDashboard() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="text-sm font-medium text-slate-700 block mb-1">Full Name</label>
-                  <input required value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} className="w-full border rounded-lg p-2" placeholder="Jane Doe" />
+                  <input required value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} className="w-full border border-slate-300 rounded-lg p-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Jane Doe" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700 block mb-1">Roll Number</label>
-                  <input required value={form.rollNo} onChange={(e) => setForm({...form, rollNo: e.target.value})} className="w-full border rounded-lg p-2" placeholder="CS2024-001" />
+                  <input required value={form.rollNo} onChange={(e) => setForm({...form, rollNo: e.target.value})} className="w-full border border-slate-300 rounded-lg p-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="CS2024-001" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700 block mb-1">Course</label>
-                  <input required value={form.course} onChange={(e) => setForm({...form, course: e.target.value})} className="w-full border rounded-lg p-2" placeholder="Computer Science" />
+                  <input required value={form.course} onChange={(e) => setForm({...form, course: e.target.value})} className="w-full border border-slate-300 rounded-lg p-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Computer Science" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700 block mb-1">Semester</label>
-                  <input required type="number" min="1" max="10" value={form.semester} onChange={(e) => setForm({...form, semester: e.target.value})} className="w-full border rounded-lg p-2" placeholder="1" />
+                  <input required type="number" min="1" max="10" value={form.semester} onChange={(e) => setForm({...form, semester: e.target.value})} className="w-full border border-slate-300 rounded-lg p-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="1" />
                 </div>
                 <button type="submit" className="w-full bg-slate-900 text-white py-2 rounded-lg font-medium hover:bg-slate-800 transition">
                   Register & Generate QR
@@ -89,7 +90,8 @@ export default function AdminDashboard() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 print:grid-cols-3 print:gap-4">
                 {students.map((student) => {
-                  const url = `${typeof window !== "undefined" ? window.location.origin : ""}/student/${student.id}`;
+                  const qrToken = generateQRToken(student.id);
+                  const url = `${typeof window !== "undefined" ? window.location.origin : ""}/student/${student.id}?token=${encodeURIComponent(qrToken.token)}`;
                   return (
                     <div key={student.id} className="bg-white p-6 rounded-2xl shadow-sm border flex flex-col items-center print:border-slate-300 print:shadow-none print:break-inside-avoid">
                       <div className="bg-white p-3 rounded-xl border mb-4">

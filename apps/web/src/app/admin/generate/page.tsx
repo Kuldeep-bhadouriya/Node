@@ -2,6 +2,7 @@ import { appRouter } from "@node/api/routers/index";
 import prisma from "@node/db";
 import QRCode from "react-qr-code";
 import { headers } from "next/headers";
+import { generateQRToken } from "@/lib/qr-token";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +36,8 @@ export default async function AdminGeneratePage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {students.map((student) => {
-              const profileUrl = `${baseUrl}/student/${student.id}`;
+              const qrToken = generateQRToken(student.id);
+              const profileUrl = `${baseUrl}/student/${student.id}?token=${encodeURIComponent(qrToken.token)}`;
               return (
                 <div key={student.id} className="bg-white p-6 rounded-2xl shadow-sm border flex flex-col items-center">
                   <div className="bg-white p-4 rounded-xl shadow-inner border mb-4">
