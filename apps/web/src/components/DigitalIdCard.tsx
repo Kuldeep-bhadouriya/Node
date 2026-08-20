@@ -33,7 +33,7 @@ export function DigitalIdCard({ student }: { student: Student }) {
           
           <div className="absolute top-5 left-5 z-10">
             <h2 className="text-[10px] font-bold tracking-[0.2em] text-white/70 dark:text-black/70 uppercase">
-              University Identity
+              ITM Gwalior
             </h2>
           </div>
         </div>
