@@ -1,12 +1,19 @@
 model Student {
-  id        String   @id @default(uuid())
-  name      String
-  rollNo    String   @unique
-  course    String
-  semester  Int
-  photoUrl  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(uuid())
+  cardNo        String   @unique
+  name          String
+  batch         String
+  branch        String
+  fathersName   String
+  mothersName   String
+  address       String
+  studentMobile String
+  parentsMobile String
+  bloodGroup    String
+  photoPath     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([id])
+  @@index([branch])
 }

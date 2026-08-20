@@ -16,6 +16,8 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
+    "students:import": "bun prisma/import-students.ts",
+    "students:qr": "bun scripts/generate-qr.ts",
     "db:seed": "bun --env-file=../../apps/web/.env prisma/seed.ts"
   },
   "dependencies": {
@@ -24,11 +26,13 @@
     "@prisma/client": "catalog:",
     "dotenv": "catalog:",
     "pg": "^8.22.0",
+    "qrcode": "^1.5.4",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@node/config": "workspace:*",
     "@types/pg": "^8.20.0",
+    "@types/qrcode": "^1.5.6",
     "prisma": "^7.8.0",
     "typescript": "^6.0.3"
   }

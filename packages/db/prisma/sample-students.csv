@@ -1,0 +1,4 @@
+cardNo,name,batch,branch,fathersName,mothersName,address,studentMobile,parentsMobile,bloodGroup,photoPath
+CY001,John Doe,2024,CY,Robert Doe,Mary Doe,123 Main Street,9876543210,9123456780,O+,/students/CY/CY001.jpg
+CY002,Jane Smith,2024,CY,James Smith,Sarah Smith,456 Oak Avenue,9876543211,9123456781,A+,/students/CY/CY002.jpg
+CS001,Mike Johnson,2024,CS,David Johnson,Lisa Johnson,789 Pine Road,9876543212,9123456782,B+,/students/CS/CS001.jpg

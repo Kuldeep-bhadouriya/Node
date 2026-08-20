@@ -55,9 +55,9 @@ export default async function AdminGeneratePage() {
                     />
                   </div>
                   <h3 className="text-lg font-bold text-slate-800 text-center">{student.name}</h3>
-                  <p className="text-sm font-medium text-slate-500 mb-1">{student.rollNo}</p>
+                  <p className="text-sm font-medium text-slate-500 mb-1">{student.cardNo}</p>
                   <p className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-md">
-                    {student.course} - Sem {student.semester}
+                    {student.branch} - {student.batch}
                   </p>
                   
                   <a
