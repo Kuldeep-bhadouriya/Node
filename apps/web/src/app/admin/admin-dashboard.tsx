@@ -12,6 +12,7 @@ interface StudentForm {
   name: string;
   batch: string;
   branch: string;
+  course: string;
   fathersName: string;
   mothersName: string;
   address: string;
@@ -27,6 +28,7 @@ export default function AdminDashboard() {
     name: "",
     batch: "",
     branch: "",
+    course: "",
     fathersName: "",
     mothersName: "",
     address: "",
@@ -51,6 +53,7 @@ export default function AdminDashboard() {
           name: "",
           batch: "",
           branch: "",
+          course: "",
           fathersName: "",
           mothersName: "",
           address: "",
@@ -74,6 +77,7 @@ export default function AdminDashboard() {
       name: form.name,
       batch: form.batch,
       branch: form.branch,
+      course: form.course,
       fathersName: form.fathersName,
       mothersName: form.mothersName,
       address: form.address,
@@ -163,6 +167,16 @@ export default function AdminDashboard() {
                       placeholder="CY"
                     />
                   </div>
+                </div>
+                <div>
+                  <label className="mb-1 block font-medium text-slate-700 text-sm">Course</label>
+                  <input
+                    required
+                    value={form.course}
+                    onChange={(e) => setForm({ ...form, course: e.target.value })}
+                    className="w-full rounded-lg border border-slate-300 p-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="B.Tech"
+                  />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>

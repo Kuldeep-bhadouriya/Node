@@ -1,7 +1,7 @@
+import { getBranchCounts } from "@node/api/data/students";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@node/auth";
-import prisma from "@node/db";
 import { DownloadQrByBranch } from "./download-client";
 
 export const dynamic = "force-dynamic";
@@ -15,10 +15,7 @@ export default async function AdminDownloadPage() {
     redirect("/login?redirect=/admin/download");
   }
 
-  const branches = await prisma.student.groupBy({
-    by: ["branch"],
-    _count: true,
-  });
+  const branches = await getBranchCounts();
 
   return (
     <div className="min-h-screen bg-slate-50 p-8">

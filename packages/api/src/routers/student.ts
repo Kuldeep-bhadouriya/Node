@@ -1,13 +1,19 @@
 import { TRPCError } from "@trpc/server";
+import { revalidateTag } from "next/cache";
 import { z } from "zod";
-
+import {
+  getAllStudents,
+  getBranches,
+  getStudentByCardNo,
+  getStudentById,
+  getStudentsByBranch,
+  STUDENTS_TAG,
+} from "../data/students";
 import { adminProcedure, publicProcedure, router } from "../index";
 
 export const studentRouter = router({
-  byId: publicProcedure.input(z.object({ id: z.string().uuid() })).query(async ({ ctx, input }) => {
-    const student = await ctx.prisma.student.findUnique({
-      where: { id: input.id },
-    });
+  byId: publicProcedure.input(z.object({ id: z.string().uuid() })).query(async ({ input }) => {
+    const student = await getStudentById(input.id);
 
     if (!student) {
       throw new TRPCError({
@@ -19,10 +25,8 @@ export const studentRouter = router({
     return student;
   }),
 
-  byCardNo: adminProcedure.input(z.object({ cardNo: z.string() })).query(async ({ ctx, input }) => {
-    const student = await ctx.prisma.student.findUnique({
-      where: { cardNo: input.cardNo },
-    });
+  byCardNo: adminProcedure.input(z.object({ cardNo: z.string() })).query(async ({ input }) => {
+    const student = await getStudentByCardNo(input.cardNo);
 
     if (!student) {
       throw new TRPCError({
@@ -34,27 +38,16 @@ export const studentRouter = router({
     return student;
   }),
 
-  getAll: adminProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.student.findMany({
-      orderBy: { createdAt: "desc" },
-    });
+  getAll: adminProcedure.query(async () => {
+    return await getAllStudents();
   }),
 
-  getByBranch: adminProcedure
-    .input(z.object({ branch: z.string() }))
-    .query(async ({ ctx, input }) => {
-      return await ctx.prisma.student.findMany({
-        where: { branch: input.branch },
-        orderBy: { cardNo: "asc" },
-      });
-    }),
+  getByBranch: adminProcedure.input(z.object({ branch: z.string() })).query(async ({ input }) => {
+    return await getStudentsByBranch(input.branch);
+  }),
 
-  getBranches: adminProcedure.query(async ({ ctx }) => {
-    const students = await ctx.prisma.student.findMany({
-      select: { branch: true },
-    });
-    const branches = [...new Set(students.map((s) => s.branch))];
-    return branches.sort();
+  getBranches: adminProcedure.query(async () => {
+    return await getBranches();
   }),
 
   create: adminProcedure
@@ -64,6 +57,7 @@ export const studentRouter = router({
         name: z.string().min(1),
         batch: z.string().min(1),
         branch: z.string().min(1),
+        course: z.string().min(1),
         fathersName: z.string().min(1),
         mothersName: z.string().min(1),
         address: z.string().min(1),
@@ -74,12 +68,13 @@ export const studentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.prisma.student.create({
+      const student = await ctx.prisma.student.create({
         data: {
           cardNo: input.cardNo,
           name: input.name,
           batch: input.batch,
           branch: input.branch,
+          course: input.course,
           fathersName: input.fathersName,
           mothersName: input.mothersName,
           address: input.address,
@@ -89,6 +84,8 @@ export const studentRouter = router({
           photoPath: input.photoPath,
         },
       });
+      revalidateTag(STUDENTS_TAG, "max");
+      return student;
     }),
 
   update: adminProcedure
@@ -99,6 +96,7 @@ export const studentRouter = router({
         name: z.string().min(1).optional(),
         batch: z.string().min(1).optional(),
         branch: z.string().min(1).optional(),
+        course: z.string().min(1).optional(),
         fathersName: z.string().min(1).optional(),
         mothersName: z.string().min(1).optional(),
         address: z.string().min(1).optional(),
@@ -110,17 +108,21 @@ export const studentRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
-      return await ctx.prisma.student.update({
+      const student = await ctx.prisma.student.update({
         where: { id },
         data,
       });
+      revalidateTag(STUDENTS_TAG, "max");
+      return student;
     }),
 
   delete: adminProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      return await ctx.prisma.student.delete({
+      const student = await ctx.prisma.student.delete({
         where: { id: input.id },
       });
+      revalidateTag(STUDENTS_TAG, "max");
+      return student;
     }),
 });

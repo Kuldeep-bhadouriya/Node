@@ -1,5 +1,5 @@
 import React from "react";
-import { BadgeCheck, QrCode, Phone, MapPin, Droplet, Users } from "lucide-react";
+import { BadgeCheck, QrCode, Phone, MapPin, Droplet, Users, GraduationCap } from "lucide-react";
 
 interface Student {
   id: string;
@@ -7,6 +7,7 @@ interface Student {
   name: string;
   batch: string;
   branch: string;
+  course: string;
   fathersName: string;
   mothersName: string;
   address: string;
@@ -72,6 +73,14 @@ export function DigitalIdCard({ student }: { student: Student }) {
                 <span className="text-zinc-400 dark:text-zinc-500 text-[10px] uppercase tracking-widest font-bold">Branch</span>
                 <span className="font-medium text-zinc-800 dark:text-zinc-200 leading-tight">{student.branch}</span>
               </div>
+            </div>
+
+            {/* Course */}
+            <div className="text-sm">
+              <span className="text-zinc-400 dark:text-zinc-500 text-[10px] uppercase tracking-widest font-bold flex items-center gap-1 mb-1">
+                <GraduationCap className="w-3 h-3" /> Course
+              </span>
+              <span className="font-medium text-zinc-800 dark:text-zinc-200 leading-tight text-sm capitalize">{student.course}</span>
             </div>
             
             {/* Parents Info */}

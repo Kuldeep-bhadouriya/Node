@@ -11,6 +11,7 @@ interface StudentCSV {
   name: string;
   batch: string;
   branch: string;
+  course?: string;
   fathersName: string;
   mothersName: string;
   address: string;
@@ -60,6 +61,7 @@ function parseCSV(contents: string): StudentCSV[] {
       name: record.name,
       batch: record.batch,
       branch: record.branch,
+      course: record.course || "btech",
       fathersName: record.fathersname,
       mothersName: record.mothersname,
       address: record.address || record.adderss,
@@ -118,6 +120,7 @@ async function importStudentsFromCSV(csvFilePath: string) {
         name: record.name,
         batch: record.batch,
         branch: record.branch,
+        course: record.course || "btech",
         fathersName: record.fathersName,
         mothersName: record.mothersName,
         address: record.address,

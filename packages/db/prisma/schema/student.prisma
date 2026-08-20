@@ -2,8 +2,9 @@ model Student {
   id            String   @id @default(uuid())
   cardNo        String   @unique
   name          String
-  batch         String
+batch         String
   branch        String
+  course        String
   fathersName   String
   mothersName   String
   address       String

@@ -7,6 +7,7 @@ interface StudentData {
   name: string;
   batch: string;
   branch: string;
+  course?: string;
   fathersName: string;
   mothersName: string;
   address: string;
@@ -46,6 +47,7 @@ async function importStudents(jsonPath: string) {
           name: student.name,
           batch: student.batch,
           branch: student.branch,
+          course: student.course || 'btech',
           fathersName: student.fathersName,
           mothersName: student.mothersName,
           address: student.address,

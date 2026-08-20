@@ -1,5 +1,5 @@
+import { getAllStudents } from "@node/api/data/students";
 import { auth } from "@node/auth";
-import prisma from "@node/db";
 import { env } from "@node/env/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -18,9 +18,7 @@ export default async function AdminGeneratePage() {
     redirect("/login?redirect=/admin/generate");
   }
 
-  const students = await prisma.student.findMany({
-    orderBy: { createdAt: "desc" },
-  });
+  const students = await getAllStudents();
 
   const baseUrl = env.BASE_URL;
 

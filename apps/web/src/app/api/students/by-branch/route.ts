@@ -1,5 +1,5 @@
+import { getStudentsByBranch } from "@node/api/data/students";
 import { auth } from "@node/auth";
-import prisma from "@node/db";
 import { env } from "@node/env/server";
 import { type NextRequest, NextResponse } from "next/server";
 import { generateQRToken } from "@/lib/qr-token";
@@ -19,10 +19,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Branch parameter required" }, { status: 400 });
   }
 
-  const students = await prisma.student.findMany({
-    where: { branch },
-    orderBy: { cardNo: "asc" },
-  });
+  const students = await getStudentsByBranch(branch);
 
   const baseUrl = env.BASE_URL;
 
