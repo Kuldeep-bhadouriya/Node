@@ -7,7 +7,8 @@
     "CORS_ORIGIN",
     "DATABASE_URL",
     "DIRECT_URL",
-    "QR_TOKEN_SECRET"
+    "QR_TOKEN_SECRET",
+    "BASE_URL"
   ],
   "tasks": {
     "build": {
