@@ -1,50 +1,46 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { publicProcedure, router } from "../index";
+import { adminProcedure, publicProcedure, router } from "../index";
 
 export const studentRouter = router({
-  byId: publicProcedure
-    .input(z.object({ id: z.string().uuid() }))
-    .query(async ({ ctx, input }) => {
-      const student = await ctx.prisma.student.findUnique({
-        where: { id: input.id },
+  byId: publicProcedure.input(z.object({ id: z.string().uuid() })).query(async ({ ctx, input }) => {
+    const student = await ctx.prisma.student.findUnique({
+      where: { id: input.id },
+    });
+
+    if (!student) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Student profile not found",
       });
+    }
 
-      if (!student) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Student profile not found",
-        });
-      }
+    return student;
+  }),
 
-      return student;
-    }),
-    
-  byCardNo: publicProcedure
-    .input(z.object({ cardNo: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const student = await ctx.prisma.student.findUnique({
-        where: { cardNo: input.cardNo },
+  byCardNo: adminProcedure.input(z.object({ cardNo: z.string() })).query(async ({ ctx, input }) => {
+    const student = await ctx.prisma.student.findUnique({
+      where: { cardNo: input.cardNo },
+    });
+
+    if (!student) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Student profile not found",
       });
+    }
 
-      if (!student) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Student profile not found",
-        });
-      }
+    return student;
+  }),
 
-      return student;
-    }),
-
-  getAll: publicProcedure.query(async ({ ctx }) => {
+  getAll: adminProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.student.findMany({
       orderBy: { createdAt: "desc" },
     });
   }),
-  
-  getByBranch: publicProcedure
+
+  getByBranch: adminProcedure
     .input(z.object({ branch: z.string() }))
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.student.findMany({
@@ -52,8 +48,8 @@ export const studentRouter = router({
         orderBy: { cardNo: "asc" },
       });
     }),
-    
-  getBranches: publicProcedure.query(async ({ ctx }) => {
+
+  getBranches: adminProcedure.query(async ({ ctx }) => {
     const students = await ctx.prisma.student.findMany({
       select: { branch: true },
     });
@@ -61,7 +57,7 @@ export const studentRouter = router({
     return branches.sort();
   }),
 
-  create: publicProcedure
+  create: adminProcedure
     .input(
       z.object({
         cardNo: z.string().min(1),
@@ -75,7 +71,7 @@ export const studentRouter = router({
         parentsMobile: z.string().min(1),
         bloodGroup: z.string().min(1),
         photoPath: z.string().optional(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       return await ctx.prisma.student.create({
@@ -94,8 +90,8 @@ export const studentRouter = router({
         },
       });
     }),
-    
-  update: publicProcedure
+
+  update: adminProcedure
     .input(
       z.object({
         id: z.string().uuid(),
@@ -110,7 +106,7 @@ export const studentRouter = router({
         parentsMobile: z.string().min(1).optional(),
         bloodGroup: z.string().min(1).optional(),
         photoPath: z.string().nullable().optional(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
@@ -119,8 +115,8 @@ export const studentRouter = router({
         data,
       });
     }),
-    
-  delete: publicProcedure
+
+  delete: adminProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       return await ctx.prisma.student.delete({

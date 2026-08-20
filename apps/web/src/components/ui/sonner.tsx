@@ -1,4 +1,4 @@
-import type { ToasterProps } from "sonner";
+import { useTheme } from "@teispace/next-themes";
 
 import {
   CircleCheckIcon,
@@ -7,7 +7,7 @@ import {
   OctagonXIcon,
   TriangleAlertIcon,
 } from "lucide-react";
-import { useTheme } from "next-themes";
+import type { ToasterProps } from "sonner";
 import { Toaster as Sonner } from "sonner";
 
 const Toaster = ({ ...props }: ToasterProps) => {

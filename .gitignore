@@ -1,4 +1,6 @@
 # Dependencies
+*CSV
+*QR
 node_modules
 .pnp
 .pnp.js
