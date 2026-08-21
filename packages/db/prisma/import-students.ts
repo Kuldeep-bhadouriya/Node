@@ -78,7 +78,7 @@ function normalizeHeader(header: string) {
 }
 
 function getBranchCode(student: StudentCSV) {
-  return student.cardNo.split("/")[2] || student.branch.match(/\(([^)]+)\)/)?.[1] || student.branch.replace(/[^a-z0-9]/gi, "").toUpperCase();
+  return student.branch.match(/\(([^)]+)\)/)?.[1] || student.cardNo.split("/").find((part) => /^[A-Z]{2,3}$/i.test(part)) || student.branch.replace(/[^a-z0-9]/gi, "").toUpperCase();
 }
 
 function getCardNumber(student: StudentCSV) {

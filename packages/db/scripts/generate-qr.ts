@@ -21,8 +21,8 @@ function generateQRToken(studentId: string, secret: string) {
 
 function getBranchCode(branch: string, cardNo: string) {
   return (
-    cardNo.split("/")[2] ||
     branch.match(/\(([^)]+)\)/)?.[1] ||
+    cardNo.split("/").find((part) => /^[A-Z]{2,3}$/i.test(part)) ||
     branch.replace(/[^a-z0-9]/gi, "").toUpperCase()
   );
 }
