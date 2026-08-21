@@ -85,15 +85,17 @@ function getCardNumber(student: StudentCSV) {
   return student.cardNo.split("/").at(-1) || student.cardNo;
 }
 
-function copyLegacyPhoto(branchCode: string, student: StudentCSV, photoPath: string) {
+function copyLegacyPhoto(branchCode: string, student: StudentCSV, photoPath: string, rowNumber: number) {
   const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../apps/web/public");
   const target = path.join(publicDir, photoPath.replace(/^\//, ""));
   if (fs.existsSync(target)) return;
 
   const legacyDir = path.join(publicDir, branchCode);
   if (!fs.existsSync(legacyDir)) return;
-  const number = Number(getCardNumber(student));
-  const legacyPhoto = fs.readdirSync(legacyDir).find((file) => new RegExp(`^${branchCode} ${number}(?:[ .]|$)`, "i").test(file));
+  const cardNumber = Number(getCardNumber(student));
+  const legacyPhoto = fs.readdirSync(legacyDir).find((file) =>
+    new RegExp(`^${branchCode} (?:${cardNumber}|${rowNumber})(?:[ .]|$)`, "i").test(file)
+  );
   if (!legacyPhoto) return;
 
   fs.mkdirSync(path.dirname(target), { recursive: true });
@@ -109,12 +111,12 @@ async function importStudentsFromCSV(csvFilePath: string) {
   let updated = 0;
   let errors = 0;
 
-  for (const record of records) {
+  for (const [index, record] of records.entries()) {
     try {
       const existing = await prisma.student.findUnique({ where: { cardNo: record.cardNo } });
       const branchCode = getBranchCode(record);
       const photoPath = record.photoPath || `/students/${branchCode}/${getCardNumber(record)}.jpg`;
-      copyLegacyPhoto(branchCode, record, photoPath);
+      copyLegacyPhoto(branchCode, record, photoPath, index + 1);
       const data = {
         cardNo: record.cardNo,
         name: record.name,
