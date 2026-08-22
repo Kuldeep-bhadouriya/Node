@@ -92,6 +92,7 @@ function copyLegacyPhoto(branchCode: string, student: StudentCSV, photoPath: str
 
   const sourceDirs = [
     path.join(publicDir, branchCode),
+    ...(branchCode === "CSE" ? [path.join(publicDir, "CS")] : []),
     path.join(publicDir, "Scan Student Photo DS"),
   ];
   const sourceDir = sourceDirs.find((directory) => fs.existsSync(directory));
