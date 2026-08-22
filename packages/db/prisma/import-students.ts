@@ -90,16 +90,20 @@ function copyLegacyPhoto(branchCode: string, student: StudentCSV, photoPath: str
   const target = path.join(publicDir, photoPath.replace(/^\//, ""));
   if (fs.existsSync(target)) return;
 
-  const legacyDir = path.join(publicDir, branchCode);
-  if (!fs.existsSync(legacyDir)) return;
+  const sourceDirs = [
+    path.join(publicDir, branchCode),
+    path.join(publicDir, "Scan Student Photo DS"),
+  ];
+  const sourceDir = sourceDirs.find((directory) => fs.existsSync(directory));
+  if (!sourceDir) return;
   const cardNumber = Number(getCardNumber(student));
-  const legacyPhoto = fs.readdirSync(legacyDir).find((file) =>
+  const legacyPhoto = fs.readdirSync(sourceDir).find((file) =>
     new RegExp(`^${branchCode} (?:${cardNumber}|${rowNumber})(?:[ .]|$)`, "i").test(file)
   );
   if (!legacyPhoto) return;
 
   fs.mkdirSync(path.dirname(target), { recursive: true });
-  fs.copyFileSync(path.join(legacyDir, legacyPhoto), target);
+  fs.copyFileSync(path.join(sourceDir, legacyPhoto), target);
 }
 
 async function importStudentsFromCSV(csvFilePath: string) {
