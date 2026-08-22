@@ -142,10 +142,20 @@ async function importStudentsFromCSV(csvFilePath: string) {
     }
   }
 
+  const branchNames = [...new Set(records.map((record) => record.branch))];
+  const cardNumbers = records.map((record) => record.cardNo);
+  const removed = await prisma.student.deleteMany({
+    where: {
+      branch: { in: branchNames },
+      cardNo: { notIn: cardNumbers },
+    },
+  });
+
   console.log("\n--- Import Summary ---");
   console.log(`Imported: ${imported}`);
   console.log(`Updated: ${updated}`);
   console.log(`Errors: ${errors}`);
+  console.log(`Removed stale records: ${removed.count}`);
   console.log(`Total processed: ${records.length}`);
 }
 
