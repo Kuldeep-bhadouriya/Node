@@ -85,10 +85,9 @@ function getCardNumber(student: StudentCSV) {
   return student.cardNo.split("/").at(-1) || student.cardNo;
 }
 
-function copyLegacyPhoto(branchCode: string, student: StudentCSV, photoPath: string, rowNumber: number) {
+function copyLegacyPhoto(branchCode: string, student: StudentCSV, photoPath: string, rowNumber: number, usedPhotoHashes: Set<string>) {
   const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../apps/web/public");
   const target = path.join(publicDir, photoPath.replace(/^\//, ""));
-  if (fs.existsSync(target)) return;
 
   const sourceDirs = [
     path.join(publicDir, branchCode),
@@ -98,13 +97,19 @@ function copyLegacyPhoto(branchCode: string, student: StudentCSV, photoPath: str
   const sourceDir = sourceDirs.find((directory) => fs.existsSync(directory));
   if (!sourceDir) return;
   const cardNumber = Number(getCardNumber(student));
-  const legacyPhoto = fs.readdirSync(sourceDir).find((file) =>
-    new RegExp(`^${branchCode} (?:${cardNumber}|${rowNumber})(?:[ .]|$)`, "i").test(file)
-  );
+  const files = fs.readdirSync(sourceDir);
+  const legacyPhoto = files.find((file) => new RegExp(`^${branchCode}\\s*${cardNumber}(?=[^0-9]|$)`, "i").test(file))
+    || files.find((file) => new RegExp(`^${branchCode}\\s*${rowNumber}(?=[^0-9]|$)`, "i").test(file));
   if (!legacyPhoto) return;
 
+  const source = path.join(sourceDir, legacyPhoto);
+  const hash = fs.readFileSync(source).toString("base64");
+  if (usedPhotoHashes.has(hash)) return;
+  usedPhotoHashes.add(hash);
+
   fs.mkdirSync(path.dirname(target), { recursive: true });
-  fs.copyFileSync(path.join(sourceDir, legacyPhoto), target);
+  fs.copyFileSync(source, target);
+  return photoPath;
 }
 
 async function importStudentsFromCSV(csvFilePath: string) {
@@ -115,13 +120,14 @@ async function importStudentsFromCSV(csvFilePath: string) {
   let imported = 0;
   let updated = 0;
   let errors = 0;
+  const usedPhotoHashes = new Set<string>();
 
   for (const [index, record] of records.entries()) {
     try {
       const existing = await prisma.student.findUnique({ where: { cardNo: record.cardNo } });
       const branchCode = getBranchCode(record);
-      const photoPath = record.photoPath || `/students/${branchCode}/${getCardNumber(record)}.jpg`;
-      copyLegacyPhoto(branchCode, record, photoPath, index + 1);
+      const requestedPhotoPath = record.photoPath || `/students/${branchCode}/${getCardNumber(record)}.jpg`;
+      const photoPath = copyLegacyPhoto(branchCode, record, requestedPhotoPath, index + 1, usedPhotoHashes) || null;
       const data = {
         cardNo: record.cardNo,
         name: record.name,
